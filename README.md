@@ -84,11 +84,22 @@ Personalhomepage/
 
 ### 修改GitHub用户名
 
-在 `index.html` 中找到GitHub API请求部分，修改用户名：
+在 `js/github-repos.js` 文件中找到GitHub API请求部分，修改用户名：
 
 ```javascript
 const res = await fetch('https://stats.rutua.cn/github-api/users/[你的GitHub用户名]/repos?sort=updated&per_page=6');
 ```
+
+### GitHub API 备用配置
+
+项目默认使用 `https://stats.rutua.cn/github-api` 作为 GitHub API 的代理服务。如果该代理不可用，你可以切换到官方 API 地址：
+
+```javascript
+// 将 github-repos.js 文件中的 API 地址修改为
+const res = await fetch('https://github-readme-stats.vercel.app/api/repos?username=[你的GitHub用户名]&sort=updated&per_page=6');
+```
+
+**注意**：请根据官方 API 的最新文档调整请求参数格式，确保能够正确获取数据。
 
 ### 修改博客API
 
