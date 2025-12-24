@@ -1,6 +1,6 @@
 # Rutua 个人主页
 
-![Rutua 个人主页预览](https://free.picui.cn/free/2025/12/24/694c3a23c6d44.png)
+![Rutua 个人主页预览]([https://free.picui.cn/free/2025/12/24/694c3a23c6d44.png](https://free.picui.cn/free/2025/12/24/694b81e0bea74.png))
 
 一个现代化、响应式的个人开发者主页，支持深色/浅色主题切换，集成GitHub仓库展示和博客文章列表。
 
@@ -184,3 +184,4 @@ MIT License
 **作者**: Rutua  
 **GitHub**: [Lexo0522](https://github.com/Lexo0522)  
 **博客**: [https://www.rutua.cn/](https://www.rutua.cn/)
+
