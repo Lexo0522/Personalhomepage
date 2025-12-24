@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>离线模式 - Rutua</title>
+  <meta name="description" content="您当前处于离线状态，部分功能可能无法使用。">
+  <!-- Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https://free.picui.cn; font-src 'self'; object-src 'none'; frame-src 'none'; upgrade-insecure-requests;">
+  <!-- 复用主站样式 -->
+  <link rel="stylesheet" href="/css/style.css">
+
+  <style>
+    /* 离线页面专属样式 */
+    .offline-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 200px);
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+
+    .offline-icon {
+      font-size: 6rem;
+      margin-bottom: 1.5rem;
+      color: var(--link);
+    }
+
+    .offline-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--fg);
+    }
+
+    .offline-message {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      color: var(--muted);
+      max-width: 600px;
+    }
+
+    .offline-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    @media (max-width: 600px) {
+      .offline-icon {
+        font-size: 4.5rem;
+      }
+      
+      .offline-title {
+        font-size: 1.6rem;
+      }
+      
+      .offline-message {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <nav class="navbar" aria-label="主导航">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">Rutua</a>
+      <ul class="nav-menu">
+        <li><a href="/" class="nav-link">首页</a></li>
+        <li><a href="#projects" class="nav-link">作品</a></li>
+        <li><a href="#blog-posts-section" class="nav-link">博客</a></li>
+        <li><a href="#github-repos-section" class="nav-link">开源</a></li>
+        <li><a href="https://www.rutua.cn/feed/" target="_blank" rel="noopener" class="nav-link">RSS</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <div class="offline-container">
+      <div class="offline-icon">📶</div>
+      <h1 class="offline-title">您当前处于离线状态</h1>
+      <p class="offline-message">
+        无法连接到网络，部分功能可能无法使用。请检查您的网络连接后重试。
+      </p>
+      <div class="offline-actions">
+        <button id="retry-btn" type="button" class="btn-primary">
+          🔄 重试连接
+        </button>
+        <a href="/" class="btn-primary">
+          🏠 返回首页
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- 明暗主题悬浮切换按钮 -->
+  <button id="theme-toggle-float" type="button" aria-label="切换明暗主题" title="切换主题">
+    <span id="theme-icon">🌓</span>
+  </button>
+
+  <!-- 页脚：两行布局 -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-line">
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" class="beian-link">
+          豫ICP备2025133377号-1
+        </a>
+      </div>
+      <div class="footer-line">
+        <span class="copyright">© 2025 Rutua. 保留所有权利。</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 外部 JavaScript 文件 -->
+  <script src="/js/theme-toggle.js"></script>
+
+  <!-- 离线页面专用 JavaScript -->
+  <script>
+    // 重试连接按钮功能
+    const retryBtn = document.getElementById('retry-btn');
+    retryBtn.addEventListener('click', () => {
+      if (navigator.onLine) {
+        window.location.reload();
+      } else {
+        // 显示连接失败提示
+        const message = document.querySelector('.offline-message');
+        const originalText = message.textContent;
+        message.textContent = '仍然无法连接到网络，请稍后重试。';
+        message.style.color = 'var(--accent)';
+        
+        // 3秒后恢复原文本
+        setTimeout(() => {
+          message.textContent = originalText;
+          message.style.color = 'var(--muted)';
+        }, 3000);
+      }
+    });
+    
+    // 监听网络状态变化
+    window.addEventListener('online', () => {
+      window.location.reload();
+    });
+  </script>
+</body>
+</html>
