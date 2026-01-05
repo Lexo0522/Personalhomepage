@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#4a6cf7">
+  <title>Rutua — WordPress 开发者</title>
+  <meta name="keywords" content="Rutua, WordPress开发者, WordPress插件, SMTP Mail WP, Argon主题, WordPress主题, 开源项目, 技术博客, 个人主页, 响应式网页, Web开发, PHP开发, WordPress优化, 邮件插件, GitHub开源">
+  <meta name="description" content="Rutua 的个人开发者主页：专注 WordPress 插件开发（如 SMTP Mail WP）、主题定制（Argon 修改版）与性能优化。分享开源项目、技术博客及响应式网页模板，助力高效建站。">
+  <link rel="canonical" href="https://rutua.cn/">
+  <!-- Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://hm.baidu.com https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https://free.picui.cn https://stats.rutua.cn https://avatars.githubusercontent.com https://raw.githubusercontent.com; connect-src 'self' https://stats.rutua.cn https://www.rutua.cn; font-src 'self'; object-src 'none'; frame-src 'none'; upgrade-insecure-requests;">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Rutua — WordPress 开发者">
+  <meta property="og:description" content="开源项目 · 技术博客 · WordPress 解决方案">
+  <meta property="og:image" content="https://free.picui.cn/free/2025/12/23/694a5cdac0998.png">
+  <meta property="og:url" content="https://home.rutua.cn/">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://free.picui.cn/free/2025/12/23/694a5cdac0998.png">
+  <link rel="shortcut icon" href="https://free.picui.cn/free/2025/12/23/694a5cdac0998.png">
+  <link rel="apple-touch-icon" href="https://free.picui.cn/free/2025/12/23/694a5cdac0998.png">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Rutua",
+    "url": "https://www.rutua.cn/",
+    "sameAs": ["https://github.com/Lexo0522"],
+    "jobTitle": "WordPress Developer"
+  }
+  </script>
+
+  <!-- 性能优化标签 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <!-- 禁止DNS预取某些域名 -->
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <!-- DNS预取关键域名 -->
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+  <link rel="dns-prefetch" href="https://hm.baidu.com">
+  
+  <!-- 外部 CSS - 优先加载 -->
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <!-- PWA Service Worker 注册 -->
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- 引入 GSAP 库 - 使用defer延迟加载，放在body底部 -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/js/sw.js')
+        .then(registration => {
+          console.log('ServiceWorker 注册成功，作用域为:', registration.scope);
+        })
+        .catch(error => {
+          console.error('ServiceWorker 注册失败:', error);
+        });
+    });
+  }
+</script>
+</head>
+<body>
+  <!-- 页面加载动画 -->
+  <div id="loading-screen">
+    <div class="loader"></div>
+    <div class="loading-text">正在加载...</div>
+  </div>
+  <!-- 顶部导航栏 -->
+  <nav class="navbar" aria-label="主导航">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">Rutua</a>
+      <ul class="nav-menu">
+        <li><a href="/" class="nav-link">首页</a></li>
+        <li><a href="#projects" class="nav-link">作品</a></li>
+        <li><a href="#blog-posts-section" class="nav-link">博客</a></li>
+        <li><a href="#github-repos-section" class="nav-link">开源</a></li>
+        <li><a href="https://www.rutua.cn/feed/" target="_blank" rel="noopener" class="nav-link">RSS</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <header>
+      <img src="img/ProfilePicture.jpg" alt="Rutua" class="avatar" loading="eager">
+      <h1>Rutua</h1>
+      <p class="tagline">WordPress 开发者 · 技术博主</p>
+
+      <p class="about-text">
+        专注 WordPress 开发与性能优化，开源爱好者。
+        致力于打造安全、高效、用户友好的建站解决方案，
+        让技术真正服务于内容创作者。
+      </p>
+
+      <a href="https://www.rutua.cn/" target="_blank" rel="noopener" class="btn-primary">
+        📚 点击前往我的博客
+      </a>
+    </header>
+
+
+
+    <!-- 我的作品 -->
+<section id="projects">
+  <div class="section-container">
+    <h2>我的作品</h2>
+    <div class="projects-grid">
+      <!-- 作品 1 -->
+      <div class="project-card">
+        <a href="https://www.rutua.cn/archives/1" target="_blank" rel="noopener" class="project-link">
+          <img src="img/smtp.jpg" alt="SMTP Mail WP" class="project-image" loading="lazy">
+          <div class="project-content">
+            <h3>SMTP Mail WP</h3>
+            <p>WordPress 插件，通过 SMTP 安全发送邮件，提升送达率，支持 Gmail、Outlook 等。</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- 作品 2 -->
+      <div class="project-card">
+        <a href="https://www.rutua.cn/archives/56" target="_blank" rel="noopener" class="project-link">
+          <img src="img/argon.jpg" alt="Argon主题修改版" class="project-image" loading="lazy">
+          <div class="project-content">
+            <h3>Argon主题修改版深度解析</h3>
+            <p>一款功能强大、高度可定制的 WordPress 主题，支持夜间模式、Pjax、说说等特性。</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- 作品 3：Rutua 个人开发者主页 -->
+<div class="project-card">
+  <a href="https://www.rutua.cn/archives/175" target="_blank" rel="noopener" class="project-link">
+    <img src="img/person.jpg" alt="Rutua 个人开发者主页" class="project-image" loading="lazy">
+    <div class="project-content">
+      <h3>Rutua 个人开发者主页</h3>
+      <p>现代化响应式模板，专为 WordPress 开发者与开源贡献者设计，集成博客、作品展示与 GitHub 动态。</p>
+    </div>
+  </a>
+</div>
+</section>
+
+    <!-- GitHub 仓库 -->
+    <section id="github-repos-section">
+      <div class="section-container">
+        <h2>最近开源项目</h2>
+        <div id="github-repos-container" class="projects-grid">
+          <div class="loading">正在加载 GitHub 仓库…</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 最新博客 -->
+    <section id="blog-posts-section">
+      <div class="section-container">
+        <h2>最新博客</h2>
+        <div id="blog-posts-container" class="posts-grid">
+          <div class="loading">正在加载博客文章…</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 回到顶部按钮 -->
+  <button id="back-to-top" type="button" aria-label="回到顶部" title="回到顶部">↑</button>
+
+  <!-- 明暗主题悬浮切换按钮 -->
+  <button id="theme-toggle-float" type="button" aria-label="切换明暗主题" title="切换主题">
+    <span id="theme-icon">🌓</span>
+  </button>
+
+  <!-- 页脚：两行布局 -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-line">
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" class="beian-link">
+          豫ICP备2025133377号-1
+        </a>
+      </div>
+      <div class="footer-line">
+        <span class="copyright">© 2025 Rutua. 保留所有权利。</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 百度统计 -->
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?3008b1edd045b28e9943f84e7bc9b450";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+  <!-- 外部 JavaScript 文件 - 使用defer延迟加载 -->
+  <script defer src="/js/loading-animation.js"></script>
+  <script defer src="/js/theme-toggle.js"></script>
+  <script defer src="/js/github-repos.js"></script>
+  <script defer src="/js/blog-posts.js"></script>
+  <script defer src="/js/back-to-top.js"></script>
+</body>
+</html>
