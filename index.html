@@ -9,19 +9,21 @@
   <meta name="description" content="Rutua 的个人开发者主页：专注 WordPress 插件开发（如 SMTP Mail WP）、主题定制（Argon 修改版）与性能优化。分享开源项目、技术博客及响应式网页模板，助力高效建站。">
   <link rel="canonical" href="https://rutua.cn/">
   <!-- Content Security Policy -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://hm.baidu.com https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https://free.picui.cn https://stats.rutua.cn https://avatars.githubusercontent.com https://raw.githubusercontent.com; connect-src 'self' https://stats.rutua.cn https://www.rutua.cn; font-src 'self'; object-src 'none'; frame-src 'none'; upgrade-insecure-requests;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://hm.baidu.com https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https://stats.rutua.cn https://avatars.githubusercontent.com https://raw.githubusercontent.com data: https://hm.baidu.com; connect-src 'self' https://stats.rutua.cn https://www.rutua.cn https://hm.baidu.com; font-src 'self'; object-src 'none'; frame-src 'none'; upgrade-insecure-requests;">
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="Rutua — WordPress 开发者">
-  <meta property="og:description" content="开源项目 · 技术博客 · WordPress 解决方案">
-  <meta property="og:image" content="https://free.picui.cn/free/2025/12/23/694a5cdac0998.png">
-  <meta property="og:url" content="https://home.rutua.cn/">
-  <meta property="og:type" content="website">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="https://free.picui.cn/free/2025/12/23/694a5cdac0998.png">
-  <link rel="shortcut icon" href="https://free.picui.cn/free/2025/12/23/694a5cdac0998.png">
-  <link rel="apple-touch-icon" href="https://free.picui.cn/free/2025/12/23/694a5cdac0998.png">
+  <!-- Favicon - 使用本地图标 -->
+  <link rel="icon" type="image/png" href="img/cropped-icon.png">
+  <link rel="shortcut icon" href="img/cropped-icon.png">
+  <link rel="apple-touch-icon" href="img/cropped-icon.png">
+  
+  <!-- Open Graph - 延迟加载，使用noscript回退 -->
+  <noscript>
+    <meta property="og:title" content="Rutua — WordPress 开发者">
+    <meta property="og:description" content="开源项目 · 技术博客 · WordPress 解决方案">
+    <meta property="og:image" content="https://rutua.cn/img/icon.jpg">
+    <meta property="og:url" content="https://home.rutua.cn/">
+    <meta property="og:type" content="website">
+  </noscript>
 
   <!-- Structured Data -->
   <script type="application/ld+json">
@@ -45,33 +47,59 @@
   
   <!-- 外部 CSS - 优先加载 -->
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="stylesheet" href="/css/accessibility.css">
+  <!-- <link rel="stylesheet" href="/css/animations.css"> -->
+  <!-- <link rel="stylesheet" href="/css/skeleton.css"> -->
   
-  <!-- PWA Service Worker 注册 -->
-  <link rel="manifest" href="/manifest.json">
+  <!-- PWA资源 - 延迟加载 -->
+  <link rel="preload" href="/manifest.json" as="fetch" crossorigin>
   
-  <!-- 引入 GSAP 库 - 使用defer延迟加载，放在body底部 -->
-<script>
-  if ('serviceWorker' in navigator) {
+  <!-- Service Worker 注册 - 使用requestIdleCallback延迟执行 -->
+  <script defer>
+    // 使用requestIdleCallback在浏览器空闲时注册Service Worker
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/js/sw.js')
-        .then(registration => {
-          console.log('ServiceWorker 注册成功，作用域为:', registration.scope);
-        })
-        .catch(error => {
-          console.error('ServiceWorker 注册失败:', error);
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => {
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/js/sw.js')
+              .then(registration => {
+                console.log('ServiceWorker 注册成功，作用域为:', registration.scope);
+              })
+              .catch(error => {
+                console.error('ServiceWorker 注册失败:', error);
+              });
+          }
         });
+      } else {
+        // 回退方案：延迟2秒后注册
+        setTimeout(() => {
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/js/sw.js')
+              .then(registration => {
+                console.log('ServiceWorker 注册成功，作用域为:', registration.scope);
+              })
+              .catch(error => {
+                console.error('ServiceWorker 注册失败:', error);
+              });
+          }
+        }, 2000);
+      }
     });
-  }
-</script>
+  </script>
 </head>
 <body>
+  <!-- 跳过导航链接 -->
+  <a href="#main-content" class="skip-link">跳过导航</a>
+  
   <!-- 页面加载动画 -->
-  <div id="loading-screen">
-    <div class="loader"></div>
+  <div id="loading-screen" aria-live="polite" aria-busy="true">
+    <div class="loader" aria-hidden="true"></div>
     <div class="loading-text">正在加载...</div>
   </div>
+  
   <!-- 顶部导航栏 -->
-  <nav class="navbar" aria-label="主导航">
+  <nav class="navbar" role="navigation" aria-label="主导航">
     <div class="nav-container">
       <a href="/" class="nav-logo">Rutua</a>
       <ul class="nav-menu">
@@ -84,18 +112,16 @@
     </div>
   </nav>
 
-  <main>
+  <main id="main-content">
     <header>
-      <img src="img/ProfilePicture.jpg" alt="Rutua" class="avatar" loading="eager">
+      <img src="/img/ProfilePicture.jpg" alt="Rutua的照片" class="avatar" loading="eager" fetchpriority="high" width="100" height="100">
       <h1>Rutua</h1>
-      <p class="tagline">WordPress 开发者 · 技术博主</p>
-
+      <p class="tagline">WordPress 开发者 | 主题 / 插件优化</p>
       <p class="about-text">
         专注 WordPress 开发与性能优化，开源爱好者。
         致力于打造安全、高效、用户友好的建站解决方案，
         让技术真正服务于内容创作者。
       </p>
-
       <a href="https://www.rutua.cn/" target="_blank" rel="noopener" class="btn-primary">
         📚 点击前往我的博客
       </a>
@@ -107,11 +133,13 @@
 <section id="projects">
   <div class="section-container">
     <h2>我的作品</h2>
+    
+    <!-- 作品网格 -->
     <div class="projects-grid">
       <!-- 作品 1 -->
       <div class="project-card">
         <a href="https://www.rutua.cn/archives/1" target="_blank" rel="noopener" class="project-link">
-          <img src="img/smtp.jpg" alt="SMTP Mail WP" class="project-image" loading="lazy">
+          <img src="/img/smtp.jpg" alt="SMTP Mail WP" class="project-image" loading="lazy" width="300" height="200">
           <div class="project-content">
             <h3>SMTP Mail WP</h3>
             <p>WordPress 插件，通过 SMTP 安全发送邮件，提升送达率，支持 Gmail、Outlook 等。</p>
@@ -122,7 +150,7 @@
       <!-- 作品 2 -->
       <div class="project-card">
         <a href="https://www.rutua.cn/archives/56" target="_blank" rel="noopener" class="project-link">
-          <img src="img/argon.jpg" alt="Argon主题修改版" class="project-image" loading="lazy">
+          <img src="/img/argon.jpg" alt="Argon主题修改版" class="project-image" loading="lazy" width="300" height="200">
           <div class="project-content">
             <h3>Argon主题修改版深度解析</h3>
             <p>一款功能强大、高度可定制的 WordPress 主题，支持夜间模式、Pjax、说说等特性。</p>
@@ -131,15 +159,17 @@
       </div>
 
       <!-- 作品 3：Rutua 个人开发者主页 -->
-<div class="project-card">
-  <a href="https://www.rutua.cn/archives/175" target="_blank" rel="noopener" class="project-link">
-    <img src="img/person.jpg" alt="Rutua 个人开发者主页" class="project-image" loading="lazy">
-    <div class="project-content">
-      <h3>Rutua 个人开发者主页</h3>
-      <p>现代化响应式模板，专为 WordPress 开发者与开源贡献者设计，集成博客、作品展示与 GitHub 动态。</p>
+      <div class="project-card">
+        <a href="https://www.rutua.cn/archives/175" target="_blank" rel="noopener" class="project-link">
+          <img src="/img/person.jpg" alt="Rutua 个人开发者主页" class="project-image" loading="lazy" width="300" height="200">
+          <div class="project-content">
+            <h3>Rutua 个人开发者主页</h3>
+            <p>现代化响应式模板，专为 WordPress 开发者与开源贡献者设计，集成博客、作品展示与 GitHub 动态。</p>
+          </div>
+        </a>
+      </div>
     </div>
-  </a>
-</div>
+  </div>
 </section>
 
     <!-- GitHub 仓库 -->
@@ -147,7 +177,18 @@
       <div class="section-container">
         <h2>最近开源项目</h2>
         <div id="github-repos-container" class="projects-grid">
-          <div class="loading">正在加载 GitHub 仓库…</div>
+          <!-- 骨架屏 -->
+          <div class="project-card skeleton">
+            <div class="skeleton-image"></div>
+            <div class="project-content">
+              <h3 class="skeleton-title"></h3>
+              <p class="skeleton-text"></p>
+              <div class="skeleton-meta">
+                <span class="skeleton-badge"></span>
+                <span class="skeleton-stars"></span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -157,18 +198,26 @@
       <div class="section-container">
         <h2>最新博客</h2>
         <div id="blog-posts-container" class="posts-grid">
-          <div class="loading">正在加载博客文章…</div>
+          <!-- 骨架屏 -->
+          <div class="post-card skeleton">
+            <div class="skeleton-image"></div>
+            <div class="post-excerpt">
+              <div class="skeleton-text"></div>
+              <h3 class="skeleton-title"></h3>
+              <p class="skeleton-text"></p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
   <!-- 回到顶部按钮 -->
-  <button id="back-to-top" type="button" aria-label="回到顶部" title="回到顶部">↑</button>
+  <button id="back-to-top" type="button" aria-label="回到顶部" title="回到顶部" tabindex="0">↑</button>
 
   <!-- 明暗主题悬浮切换按钮 -->
-  <button id="theme-toggle-float" type="button" aria-label="切换明暗主题" title="切换主题">
-    <span id="theme-icon">🌓</span>
+  <button id="theme-toggle-float" type="button" aria-label="切换明暗主题" title="切换主题" tabindex="0">
+    <span id="theme-icon" aria-hidden="true">🌓</span>
   </button>
 
   <!-- 页脚：两行布局 -->
@@ -185,8 +234,8 @@
     </div>
   </footer>
 
-  <!-- 百度统计 -->
-  <script>
+  <!-- 百度统计 - 暂时注释以解决stadium.js错误 -->
+  <!-- <script>
     var _hmt = _hmt || [];
     (function() {
       var hm = document.createElement("script");
@@ -194,13 +243,18 @@
       var s = document.getElementsByTagName("script")[0]; 
       s.parentNode.insertBefore(hm, s);
     })();
-  </script>
+  </script> -->
 
   <!-- 外部 JavaScript 文件 - 使用defer延迟加载 -->
+  <script defer src="/js/config.js"></script>
+  <script defer src="/js/utils.js"></script>
   <script defer src="/js/loading-animation.js"></script>
   <script defer src="/js/theme-toggle.js"></script>
   <script defer src="/js/github-repos.js"></script>
   <script defer src="/js/blog-posts.js"></script>
   <script defer src="/js/back-to-top.js"></script>
+  <script defer src="/js/beian.js"></script>
+  <script defer src="/js/smooth-scroll.js"></script>
+  <script defer src="/js/critical-css.js"></script>
 </body>
 </html>

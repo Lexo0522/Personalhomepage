@@ -1,29 +1,47 @@
-// 博客文章加载逻辑（最多3篇）
+async function fetchWithRetry(url, options, maxRetries = 3, delay = 1000) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const res = await fetch(url, options);
+      
+      if (res.ok) {
+        return res;
+      }
+      
+      if (i === maxRetries - 1) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+    } catch (error) {
+      if (i === maxRetries - 1) {
+        throw error;
+      }
+      
+      Utils.Logger.warn(`请求失败，第 ${i + 1} 次重试...`, error);
+      await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+    }
+  }
+}
+
 async function fetchBlogPosts() {
   const container = document.getElementById('blog-posts-container');
-  // 确保容器存在
+  
   if (!container) {
-    console.error('Blog posts container not found');
+    Utils.Logger.error('Blog posts container not found');
     return;
   }
   
+  Utils.Logger.log('开始获取博客文章数据');
+  
   try {
-    // 首先检查GSAP是否可用
-    if (typeof gsap === 'undefined') {
-      console.warn('GSAP not available, proceeding without animations');
-    }
+    const apiUrl = `${CONFIG.api.blog.baseUrl}${CONFIG.api.blog.endpoint}?per_page=${CONFIG.api.blog.postsCount}&_embed=${CONFIG.api.blog.embed}`;
     
-    // 使用fetch获取数据，添加CORS配置
-    const res = await fetch('https://www.rutua.cn/wp-json/wp/v2/posts?per_page=3&_embed', {
+    const res = await fetchWithRetry(apiUrl, {
       mode: 'cors',
       headers: {
         'Accept': 'application/json'
       }
     });
-    
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-    }
     
     const posts = await res.json();
     
@@ -33,30 +51,26 @@ async function fetchBlogPosts() {
     
     if (posts.length === 0) {
       container.innerHTML = '<div class="error">暂无文章</div>';
+      Utils.Logger.log('无博客文章');
       return;
     }
     
-    // 已限制 per_page=3，直接使用
     const html = posts.map(post => {
-      // 确保post对象具有必要的属性
       if (!post || !post.title || !post.link) {
-        console.warn('Invalid post object, skipping:', post);
+        Utils.Logger.warn('Invalid post object, skipping:', post);
         return '';
       }
       
       const temp = document.createElement('div');
       temp.innerHTML = post.excerpt?.rendered || post.content?.rendered || '';
       const excerpt = temp.textContent || temp.innerText || '';
-      const shortExcerpt = excerpt.length > 120 ? excerpt.substring(0, 120) + '...' : excerpt;
+      const shortExcerpt = Utils.Data.truncateText(excerpt, 120);
       
-      // 处理日期
-      const date = new Date(post.date_gmt ? post.date_gmt + 'Z' : post.date);
-      const formattedDate = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+      const formattedDate = Utils.Data.formatDate(post.date_gmt ? post.date_gmt + 'Z' : post.date);
       
-      // 处理特色图片
       let featuredImage = '';
       if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-        featuredImage = `<img src="${post._embedded['wp:featuredmedia'][0].source_url}" alt="${post.title.rendered}" class="project-image" loading="lazy">`;
+        featuredImage = `<img src="${post._embedded['wp:featuredmedia'][0].source_url}" alt="${post.title.rendered}" class="project-image" loading="lazy" width="300" height="200" onerror="this.src='/img/icon.jpg'; this.onerror=null;">`;
       }
       
       return `
@@ -73,19 +87,30 @@ async function fetchBlogPosts() {
       `;
     }).join('');
     
-    // 移除空字符串
     const cleanHtml = html.replace(/^\s+|\s+$/g, '');
     
     if (!cleanHtml) {
       container.innerHTML = '<div class="error">暂无可用文章</div>';
+      Utils.Logger.log('无可用博客文章');
       return;
     }
     
     container.innerHTML = cleanHtml;
+    Utils.Logger.log(`成功加载 ${posts.length} 篇博客文章`);
+    
+    const skeletonCard = document.querySelector('#blog-posts-container .post-card.skeleton');
+    if (skeletonCard) {
+      skeletonCard.classList.add('hidden');
+    }
     
   } catch (err) {
-    console.error('Failed to load blog posts:', err);
-    container.innerHTML = `<div class="error">加载失败，请稍后重试 😢</div>`;
+    Utils.Logger.error('Failed to load blog posts:', err);
+    container.innerHTML = `
+      <div class="loading-with-retry">
+        <div class="error">加载失败，请稍后重试 😢</div>
+        <button class="retry-button" onclick="fetchBlogPosts()">重试</button>
+      </div>
+    `;
   }
 }
 

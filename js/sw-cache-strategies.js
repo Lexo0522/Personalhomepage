@@ -1,26 +1,3 @@
-const CACHE_NAME = 'rutua-pwa-v8';
-const PRE_CACHE = [
-  '/',
-  '/css/style.css',
-  '/css/animations.css',
-  '/css/responsive.css',
-  '/css/accessibility.css',
-  '/css/skeleton.css',
-  '/manifest.json',
-  '/offline.html',
-  '/js/config.js',
-  '/js/utils.js',
-  '/js/theme-toggle.js',
-  '/js/github-repos.js',
-  '/js/blog-posts.js',
-  '/js/back-to-top.js',
-  '/js/animations.js',
-  '/js/beian.js',
-  '/js/smooth-scroll.js',
-  '/js/skeleton.js',
-  '/js/critical-css.js'
-];
-
 const CACHE_STRATEGIES = {
   CACHE_FIRST: 'cache-first',
   NETWORK_FIRST: 'network-first',
@@ -33,8 +10,7 @@ const CACHE_CONFIG = {
   '/js/': CACHE_STRATEGIES.CACHE_FIRST,
   '/img/': CACHE_STRATEGIES.CACHE_FIRST,
   '/manifest.json': CACHE_STRATEGIES.CACHE_FIRST,
-  '/offline.html': CACHE_STRATEGIES.CACHE_FIRST,
-  '/api/': CACHE_STRATEGIES.STALE_WHILE_REVALIDATE
+  '/offline.html': CACHE_STRATEGIES.CACHE_FIRST
 };
 
 const CACHE_DURATIONS = {
@@ -43,8 +19,7 @@ const CACHE_DURATIONS = {
   '/js/': 31536000,
   '/img/': 31536000,
   '/manifest.json': 31536000,
-  '/offline.html': 31536000,
-  '/api/': 86400
+  '/offline.html': 31536000
 };
 
 function getCacheStrategy(url) {
@@ -101,43 +76,15 @@ async function staleWhileRevalidate(request) {
   const cache = await caches.open(CACHE_NAME);
   const cachedResponse = await cache.match(request);
   
-  const networkPromise = fetch(request).then(networkResponse => {
+  const fetchPromise = fetch(request).then(networkResponse => {
     if (networkResponse && networkResponse.status === 200) {
       cache.put(request, networkResponse.clone());
     }
     return networkResponse;
-  }).catch(() => {
-    return cachedResponse;
   });
   
-  return cachedResponse || networkPromise;
+  return cachedResponse || fetchPromise;
 }
-
-self.addEventListener('install', event => {
-  console.log('[SW] Service Worker 安装中...');
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log('[SW] 预缓存资源:', PRE_CACHE);
-      return cache.addAll(PRE_CACHE);
-    })
-  );
-});
-
-self.addEventListener('activate', event => {
-  console.log('[SW] Service Worker 激活中...');
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('[SW] 清理旧缓存:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-});
 
 self.addEventListener('fetch', event => {
   const request = event.request;

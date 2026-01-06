@@ -6,9 +6,10 @@
   <title>离线模式 - Rutua</title>
   <meta name="description" content="您当前处于离线状态，部分功能可能无法使用。">
   <!-- Content Security Policy -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https://free.picui.cn; font-src 'self'; object-src 'none'; frame-src 'none'; upgrade-insecure-requests;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; object-src 'none'; frame-src 'none'; upgrade-insecure-requests;">
   <!-- 复用主站样式 -->
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/responsive.css">
 
   <style>
     /* 离线页面专属样式 */
@@ -116,7 +117,10 @@
   </footer>
 
   <!-- 外部 JavaScript 文件 -->
+  <script src="/js/config.js"></script>
+  <script src="/js/utils.js"></script>
   <script src="/js/theme-toggle.js"></script>
+  <script src="/js/beian.js"></script>
 
   <!-- 离线页面专用 JavaScript -->
   <script>

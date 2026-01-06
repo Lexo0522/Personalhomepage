@@ -1,4 +1,3 @@
-// GitHub 仓库加载逻辑（最多3个）
 const languageColors = {
   'JavaScript': '#f1e05a', 'TypeScript': '#3178c6', 'Python': '#3572A5', 'PHP': '#4F5D95',
   'HTML': '#e34c26', 'CSS': '#563d7c', 'Shell': '#89e051', 'Go': '#00ADD8',
@@ -11,31 +10,50 @@ function getLanguageColor(lang) {
   return lang && languageColors[lang] ? languageColors[lang] : '#6c757d';
 }
 
+async function fetchWithRetry(url, options, maxRetries = 3, delay = 1000) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const res = await fetch(url, options);
+      
+      if (res.ok) {
+        return res;
+      }
+      
+      if (i === maxRetries - 1) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+    } catch (error) {
+      if (i === maxRetries - 1) {
+        throw error;
+      }
+      
+      Utils.Logger.warn(`请求失败，第 ${i + 1} 次重试...`, error);
+      await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+    }
+  }
+}
+
 async function fetchRepos() {
   const container = document.getElementById('github-repos-container');
-  // 确保容器存在
+  
   if (!container) {
-    console.error('GitHub repos container not found');
+    Utils.Logger.error('GitHub repos container not found');
     return;
   }
   
+  Utils.Logger.log('开始获取GitHub仓库数据');
+  
   try {
-    // 首先检查GSAP是否可用
-    if (typeof gsap === 'undefined') {
-      console.warn('GSAP not available, proceeding without animations');
-    }
+    const apiUrl = `${CONFIG.api.github.baseUrl}/users/${CONFIG.api.github.username}/repos?sort=${CONFIG.api.github.sortBy}&per_page=${CONFIG.api.github.reposCount}`;
     
-    // 使用fetch获取数据，添加CORS配置
-    const res = await fetch('https://stats.rutua.cn/github-api/users/Lexo0522/repos?sort=updated&per_page=6', {
+    const res = await fetchWithRetry(apiUrl, {
       mode: 'cors',
       headers: {
         'Accept': 'application/json'
       }
     });
-    
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-    }
     
     const repos = await res.json();
     
@@ -45,14 +63,15 @@ async function fetchRepos() {
     
     if (repos.length === 0) {
       container.innerHTML = '<div class="error">暂无公开仓库</div>';
+      Utils.Logger.log('无公开仓库');
       return;
     }
     
-    // 过滤非 fork 仓库，并取前 3 个
     const filtered = repos.filter(repo => !repo.fork).slice(0, 3);
     
     if (filtered.length === 0) {
       container.innerHTML = '<div class="error">暂无公开仓库</div>';
+      Utils.Logger.log('无非fork仓库');
       return;
     }
     
@@ -60,7 +79,10 @@ async function fetchRepos() {
       const lang = repo.language || 'Unknown';
       const color = getLanguageColor(lang);
       const stars = repo.stargazers_count.toLocaleString();
-      const desc = repo.description || '暂无描述';
+      const forks = repo.forks_count.toLocaleString();
+      const desc = repo.description || '开发中';
+      const updated = Utils.Data.formatDate(repo.updated_at);
+      
       return `
         <div class="project-card">
           <a href="${repo.html_url}" target="_blank" rel="noopener" class="project-link">
@@ -73,7 +95,15 @@ async function fetchRepos() {
                   color: ${color};
                   border: 1px solid ${color}40;
                 ">${lang}</span>
-                <span class="stars">⭐ ${stars}</span>
+                <span class="updated">更新于 ${updated}</span>
+              </div>
+              <div class="repo-actions">
+                <a href="${repo.html_url}/stargazers" target="_blank" rel="noopener" class="repo-action-btn star-btn" onclick="event.stopPropagation()">
+                  ⭐ Star
+                </a>
+                <a href="${repo.html_url}/fork" target="_blank" rel="noopener" class="repo-action-btn fork-btn" onclick="event.stopPropagation()">
+                  🍴 Fork
+                </a>
               </div>
             </div>
           </a>
@@ -82,10 +112,21 @@ async function fetchRepos() {
     }).join('');
     
     container.innerHTML = html;
+    Utils.Logger.log(`成功加载 ${filtered.length} 个GitHub仓库`);
+    
+    const skeletonCard = document.querySelector('#github-repos-container .project-card.skeleton');
+    if (skeletonCard) {
+      skeletonCard.classList.add('hidden');
+    }
     
   } catch (err) {
-    console.error('Failed to load GitHub repos:', err);
-    container.innerHTML = `<div class="error">GitHub仓库加载失败: ${err.message}</div>`;
+    Utils.Logger.error('Failed to load GitHub repos:', err);
+    container.innerHTML = `
+      <div class="loading-with-retry">
+        <div class="error">GitHub仓库加载失败: ${err.message}</div>
+        <button class="retry-button" onclick="fetchRepos()">重试</button>
+      </div>
+    `;
   }
 }
 

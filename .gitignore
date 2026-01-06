@@ -13,14 +13,20 @@ ehthumbs.db
 *.swp
 *.swo
 *~
+*.sublime-project
+*.sublime-workspace
 
 # 日志文件
 *.log
 logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # 缓存文件
 .cache/
 .temp/
+.eslintcache
 
 # 环境变量文件
 .env
@@ -31,15 +37,19 @@ logs/
 
 # 依赖目录（如果使用Node.js）
 node_modules/
+package-lock.json
+yarn.lock
 
 # 构建目录（如果使用构建工具）
 dist/
 build/
+out/
 
 # 其他临时文件
 *.tmp
 *.temp
 *.bak
+*.swp
 
 # 本地配置文件（如果有）
 .localconfig
@@ -48,3 +58,12 @@ build/
 # PWA缓存文件（Service Worker生成）
 workbox-*
 sw.js.map
+
+# 测试覆盖率
+coverage/
+.nyc_output/
+
+# 部署相关
+.vercel/
+.netlify/
+*.tsbuildinfo
