@@ -337,8 +337,8 @@ h1 {
 
 .project-card,
 .post-card {
-  background-color: #ffffff !important;
-  border: 1px solid #ecf0f1 !important;
+  background-color: var(--card-bg) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -353,7 +353,7 @@ h1 {
 .post-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
-  background-color: #f8f9fa !important;
+  background-color: var(--card-hover) !important;
 }
 
 /* 项目链接样式 */
@@ -514,21 +514,21 @@ h1 {
 .post-title {
   font-size: 1.45rem;
   margin-bottom: 1rem;
-  color: #2c3e50 !important;
+  color: var(--fg) !important;
   font-weight: 600;
   flex-shrink: 0;
 }
 
 .project-content p,
 .post-content {
-  color: #7f8c8d !important;
+  color: var(--muted) !important;
   font-size: 1.05rem;
   line-height: 1.75;
   flex: 1;
 }
 
 .post-date {
-  color: #7f8c8d !important;
+  color: var(--muted) !important;
   font-size: 0.9rem;
   margin-bottom: 0.8rem;
   font-weight: 500;
