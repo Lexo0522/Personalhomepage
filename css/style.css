@@ -498,7 +498,7 @@ h1 {
   height: 188px;
   object-fit: cover;
   display: block;
-  background-color: #ffffff !important;
+  background-color: var(--card-bg) !important;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), filter 0.3s ease;
 }
 
