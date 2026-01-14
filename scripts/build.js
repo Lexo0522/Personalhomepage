@@ -12,7 +12,8 @@ const CONFIG = {
     'css',
     'js',
     'img',
-    'docs'
+    'docs',
+    'data'
   ],
   filesToMinify: [
     'index.html',

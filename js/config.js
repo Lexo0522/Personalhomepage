@@ -15,10 +15,13 @@ const CONFIG = {
   api: {
     github: {
       username: 'Lexo0522',
-      baseUrl: 'https://stats.rutua.cn/github-api',
+      baseUrl: 'https://api.github.com',
       fallbackUrl: 'https://api.github.com',
       reposCount: 6,
-      sortBy: 'updated'
+      sortBy: 'updated',
+      useCache: true,
+      cachePath: '/data/github-repos.json',
+      cacheTTL: 3600000
     },
     blog: {
       baseUrl: 'https://www.rutua.cn',

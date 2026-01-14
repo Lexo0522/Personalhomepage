@@ -48,6 +48,11 @@ jobs:
     - name: 安装依赖
       run: npm ci
     
+    - name: 更新 GitHub 数据缓存
+      run: npm run fetch-github
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
     - name: 构建项目
       run: npm run build
     
@@ -78,6 +83,11 @@ jobs:
     
     - name: 安装依赖
       run: npm ci
+    
+    - name: 更新 GitHub 数据缓存
+      run: npm run fetch-github
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
     - name: 构建项目
       run: npm run build

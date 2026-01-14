@@ -10,6 +10,36 @@ function getLanguageColor(lang) {
   return lang && languageColors[lang] ? languageColors[lang] : '#6c757d';
 }
 
+async function loadFromCache() {
+  try {
+    const response = await fetch(CONFIG.api.github.cachePath);
+    
+    if (!response.ok) {
+      return null;
+    }
+    
+    const cacheData = await response.json();
+    
+    if (!cacheData.timestamp || !cacheData.data) {
+      return null;
+    }
+    
+    const now = Date.now();
+    const cacheAge = now - cacheData.timestamp;
+    
+    if (cacheAge > CONFIG.api.github.cacheTTL) {
+      Utils.Logger.log('Cache expired, fetching fresh data');
+      return null;
+    }
+    
+    Utils.Logger.log(`Using cached data (age: ${Math.round(cacheAge / 1000)}s)`);
+    return cacheData.data;
+  } catch (error) {
+    Utils.Logger.warn('Failed to load from cache:', error);
+    return null;
+  }
+}
+
 async function fetchWithRetry(url, options, maxRetries = 3, delay = 1000) {
   for (let i = 0; i < maxRetries; i++) {
     try {
@@ -46,19 +76,27 @@ async function fetchRepos() {
   Utils.Logger.log('开始获取GitHub仓库数据');
   
   try {
-    const apiUrl = `${CONFIG.api.github.baseUrl}/users/${CONFIG.api.github.username}/repos?sort=${CONFIG.api.github.sortBy}&per_page=${CONFIG.api.github.reposCount}`;
+    let repos = null;
     
-    const res = await fetchWithRetry(apiUrl, {
-      mode: 'cors',
-      headers: {
-        'Accept': 'application/json'
+    if (CONFIG.api.github.useCache) {
+      repos = await loadFromCache();
+    }
+    
+    if (!repos) {
+      const apiUrl = `${CONFIG.api.github.baseUrl}/users/${CONFIG.api.github.username}/repos?sort=${CONFIG.api.github.sortBy}&per_page=${CONFIG.api.github.reposCount}`;
+      
+      const res = await fetchWithRetry(apiUrl, {
+        mode: 'cors',
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      
+      repos = await res.json();
+      
+      if (!Array.isArray(repos)) {
+        throw new Error('Invalid response format: expected array');
       }
-    });
-    
-    const repos = await res.json();
-    
-    if (!Array.isArray(repos)) {
-      throw new Error('Invalid response format: expected array');
     }
     
     if (repos.length === 0) {

@@ -10,6 +10,7 @@
     "clean": "node scripts/clean.js",
     "validate": "node scripts/validate.js",
     "deploy": "node scripts/deploy.js",
+    "fetch-github": "node scripts/fetch-github-data.js",
     "test": "echo \"No tests specified\" && exit 0",
     "lint": "eslint js/**/*.js",
     "format": "prettier --write \"**/*.{html,css,js,json,md}\""
