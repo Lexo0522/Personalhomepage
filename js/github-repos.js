@@ -28,39 +28,55 @@ async function loadFromCache() {
     const cacheAge = now - cacheData.timestamp;
     
     if (cacheAge > CONFIG.api.github.cacheTTL) {
-      Utils.Logger.log('Cache expired, fetching fresh data');
       return null;
     }
     
-    Utils.Logger.log(`Using cached data (age: ${Math.round(cacheAge / 1000)}s)`);
     return cacheData.data;
   } catch (error) {
-    Utils.Logger.warn('Failed to load from cache:', error);
     return null;
   }
 }
 
-async function fetchWithRetry(url, options, maxRetries = 3, delay = 1000) {
-  for (let i = 0; i < maxRetries; i++) {
+async function fetchWithTimeout(url, options, timeout = CONFIG.api.github.proxyTimeout) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error(`Request timeout after ${timeout}ms`);
+    }
+    throw error;
+  }
+}
+
+async function fetchWithFallback(url, options, maxRetries = 2) {
+  const proxyUrl = `${CONFIG.api.github.proxyUrl}${url}`;
+  const fallbackUrl = `${CONFIG.api.github.fallbackUrl}${url}`;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
-      const res = await fetch(url, options);
+      const targetUrl = attempt === 0 ? proxyUrl : fallbackUrl;
+      const res = await fetchWithTimeout(targetUrl, options);
       
       if (res.ok) {
         return res;
       }
       
-      if (i === maxRetries - 1) {
+      if (attempt === maxRetries - 1) {
         throw new Error(`HTTP ${res.status}: ${res.statusText}`);
       }
-      
-      await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
     } catch (error) {
-      if (i === maxRetries - 1) {
+      if (attempt === maxRetries - 1) {
         throw error;
       }
-      
-      Utils.Logger.warn(`请求失败，第 ${i + 1} 次重试...`, error);
-      await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
     }
   }
 }
@@ -69,11 +85,8 @@ async function fetchRepos() {
   const container = document.getElementById('github-repos-container');
   
   if (!container) {
-    Utils.Logger.error('GitHub repos container not found');
     return;
   }
-  
-  Utils.Logger.log('开始获取GitHub仓库数据');
   
   try {
     let repos = null;
@@ -83,9 +96,9 @@ async function fetchRepos() {
     }
     
     if (!repos) {
-      const apiUrl = `${CONFIG.api.github.baseUrl}/users/${CONFIG.api.github.username}/repos?sort=${CONFIG.api.github.sortBy}&per_page=${CONFIG.api.github.reposCount}`;
+      const apiUrl = `/users/${CONFIG.api.github.username}/repos?sort=${CONFIG.api.github.sortBy}&per_page=${CONFIG.api.github.reposCount}`;
       
-      const res = await fetchWithRetry(apiUrl, {
+      const res = await fetchWithFallback(apiUrl, {
         mode: 'cors',
         headers: {
           'Accept': 'application/json'
@@ -101,7 +114,6 @@ async function fetchRepos() {
     
     if (repos.length === 0) {
       container.innerHTML = '<div class="error">暂无公开仓库</div>';
-      Utils.Logger.log('无公开仓库');
       return;
     }
     
@@ -109,15 +121,12 @@ async function fetchRepos() {
     
     if (filtered.length === 0) {
       container.innerHTML = '<div class="error">暂无公开仓库</div>';
-      Utils.Logger.log('无非fork仓库');
       return;
     }
     
     const html = filtered.map(repo => {
       const lang = repo.language || 'Unknown';
       const color = getLanguageColor(lang);
-      const stars = repo.stargazers_count.toLocaleString();
-      const forks = repo.forks_count.toLocaleString();
       const desc = repo.description || '开发中';
       const updated = Utils.Data.formatDate(repo.updated_at);
       
@@ -150,7 +159,6 @@ async function fetchRepos() {
     }).join('');
     
     container.innerHTML = html;
-    Utils.Logger.log(`成功加载 ${filtered.length} 个GitHub仓库`);
     
     const skeletonCard = document.querySelector('#github-repos-container .project-card.skeleton');
     if (skeletonCard) {
@@ -158,7 +166,6 @@ async function fetchRepos() {
     }
     
   } catch (err) {
-    Utils.Logger.error('Failed to load GitHub repos:', err);
     container.innerHTML = `
       <div class="loading-with-retry">
         <div class="error">GitHub仓库加载失败: ${err.message}</div>

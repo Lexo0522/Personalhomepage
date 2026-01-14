@@ -11,7 +11,7 @@
 - ♿ **无障碍访问**：符合WCAG 2.1 AA/AAA标准，支持屏幕阅读器
 - 🌓 **主题切换**：支持深色/浅色主题，自动跟随系统设置
 - 📱 **PWA支持**：可安装为桌面应用，支持离线访问
-- 📊 **GitHub集成**：自动获取并展示最新的GitHub仓库
+- 📊 **GitHub集成**：通过Cloudflare代理获取GitHub仓库数据，支持自动fallback
 - 📝 **博客集成**：从WordPress博客自动获取最新文章
 - 🔝 **回到顶部**：平滑滚动回到顶部功能
 - 🎯 **平滑滚动**：页面内锚点平滑跳转
@@ -28,7 +28,7 @@
 - **CSS3**：CSS变量，Grid/Flex布局，响应式设计，贝塞尔曲线动画
 - **JavaScript (ES6+)**：异步编程，模块化设计，纯JavaScript动画实现
 - **PWA**：Service Worker，Manifest.json
-- **GitHub API**：通过代理获取GitHub仓库数据
+- **GitHub API**：通过Cloudflare代理获取数据，支持自动fallback
 - **WordPress REST API**：获取博客文章数据
 - **性能优化**：资源预加载，图片懒加载，代码拆分，延迟执行
 
@@ -49,17 +49,18 @@ Personalhomepage/
 │   ├── critical-css.js     # 关键CSS内联脚本
 │   ├── back-to-top.js     # 回到顶部功能
 │   ├── blog-posts.js      # 博客文章获取与展示
-│   ├── github-repos.js    # GitHub仓库获取与展示
+│   ├── github-repos.js    # GitHub仓库获取与展示（支持代理和fallback）
 │   ├── loading-animation.js # 页面加载动画
 │   ├── sw.js              # Service Worker文件
 │   └── theme-toggle.js    # 主题切换功能
-├── docs/                  # 文档目录
-│   └── PERFORMANCE.md     # 性能优化文档
+├── data/                  # 数据缓存目录
+│   └── github-repos.json  # GitHub仓库数据缓存
 ├── scripts/               # 构建脚本
 │   ├── build.js          # 构建脚本
 │   ├── clean.js          # 清理脚本
 │   ├── validate.js       # 验证脚本
 │   ├── extract-critical-css.js # 关键CSS提取脚本
+│   ├── fetch-github-data.js # GitHub数据获取脚本（支持代理和fallback）
 │   └── deploy.js         # 部署脚本
 ├── .github/
 │   └── workflows/
@@ -124,12 +125,17 @@ npm run validate
 npm run clean
 ```
 
+### 更新GitHub数据缓存
+
+```bash
+npm run fetch-github
+```
+
 ## 自定义配置
 
 所有配置都集中在 `js/config.js` 文件中，包括：
-
 - 网站基本信息（包括备案号）
-- API配置（GitHub、博客、分析）
+- API配置（GitHub代理、fallback、博客、分析）
 - 性能配置
 - UI配置
 - PWA配置
@@ -152,7 +158,8 @@ site: {
 api: {
   github: {
     username: '你的GitHub用户名',
-    // ...
+    proxyUrl: '你的代理地址',
+    fallbackUrl: 'https://api.github.com'
   }
 }
 ```
@@ -165,7 +172,7 @@ api: {
 api: {
   blog: {
     baseUrl: 'https://你的博客地址',
-    // ...
+    endpoint: '/wp-json/wp/v2/posts'
   }
 }
 ```
@@ -186,6 +193,32 @@ api: {
   --shadow: rgba(0, 0, 0, 0.08);
 }
 ```
+
+## GitHub API 代理机制
+
+项目使用 Cloudflare Workers 作为 GitHub API 代理，提供以下优势：
+
+### 代理配置
+
+- **代理地址**：`https://github-api-proxy.kate522.workers.dev`
+- **Fallback地址**：`https://api.github.com`
+- **超时时间**：10秒（代理），30秒（官方API）
+
+### 工作原理
+
+1. **优先使用代理**：首次请求通过 Cloudflare 代理发送
+2. **超时检测**：10秒内无响应自动触发fallback
+3. **自动切换**：代理超时后自动切换到 GitHub 官方 API
+4. **本地缓存**：成功获取的数据缓存到本地，1小时内有效
+5. **智能重试**：支持最多2次重试（代理 + fallback）
+
+### 优势
+
+- ✅ **速度优化**：代理服务器通常响应更快
+- ✅ **可靠性**：fallback机制确保服务可用性
+- ✅ **减少限制**：代理可绕过 GitHub API 速率限制
+- ✅ **缓存策略**：本地缓存减少重复请求
+- ✅ **详细日志**：便于调试和监控
 
 ## 部署
 
@@ -288,7 +321,6 @@ npm run format    # 代码格式化
 ### 工具函数
 
 项目提供了丰富的工具函数库（`js/utils.js`）：
-
 - DOM操作
 - 事件处理
 - 动画效果
@@ -314,6 +346,7 @@ MIT License
 ## 致谢
 
 - [WordPress REST API](https://developer.wordpress.org/rest-api/)：获取博客文章数据
+- [Cloudflare Workers](https://developers.cloudflare.com/workers/)：GitHub API 代理服务
 
 ---
 

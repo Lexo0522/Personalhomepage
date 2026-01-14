@@ -15,13 +15,14 @@ const CONFIG = {
   api: {
     github: {
       username: 'Lexo0522',
-      baseUrl: 'https://api.github.com',
+      proxyUrl: 'https://github-api-proxy.kate522.workers.dev',
       fallbackUrl: 'https://api.github.com',
       reposCount: 6,
       sortBy: 'updated',
       useCache: true,
       cachePath: '/data/github-repos.json',
-      cacheTTL: 3600000
+      cacheTTL: 3600000,
+      proxyTimeout: 5000
     },
     blog: {
       baseUrl: 'https://www.rutua.cn',
