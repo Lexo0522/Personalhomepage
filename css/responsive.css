@@ -1,0 +1,262 @@
+/* ======================
+   响应式优化（统一规则，无冲突）
+====================== */
+
+/* 基础小屏（≤767px）：1列，适配手机 */
+@media (max-width: 767px) {
+  /* 基础容器适配 */
+  .container,
+  .nav-container {
+    width: 100%;
+    padding: 0 0.8rem;
+  }
+
+  /* 导航链接适配 */
+  .nav-link {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  /* 头部信息适配 */
+  header {
+    padding: 1.2rem 0 1.5rem;
+  }
+
+  .avatar {
+    width: 70px;
+    height: 70px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .tagline {
+    font-size: 0.9rem;
+  }
+
+  .about-text {
+    font-size: 0.9rem;
+  }
+
+  /* 按钮适配 */
+  .btn-primary {
+    font-size: 0.9rem;
+    padding: 0.5rem 1.2rem;
+  }
+
+  /* 悬浮按钮适配 */
+  #back-to-top,
+  #theme-toggle-float {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  /* 核心：卡片1列 */
+  .projects-grid,
+  .posts-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+}
+
+/* 平板（768px - 1199px）：2列，覆盖所有平板尺寸 */
+@media (min-width: 768px) and (max-width: 1199px) {
+  /* 基础容器适配 */
+  .container {
+    width: 95%;
+    padding: 0 1.5rem;
+  }
+
+  .nav-container {
+    width: 95%;
+  }
+
+  /* 头部信息适配 */
+  header {
+    padding: 1.8rem 0 2.5rem;
+  }
+
+  .avatar {
+    width: 90px;
+    height: 90px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .tagline {
+    font-size: 1.05rem;
+  }
+
+  .about-text {
+    font-size: 1.05rem;
+    padding: 0 1rem;
+  }
+
+  /* 区块容器适配 */
+  .section-container {
+    width: 92%;
+    padding: 1.5rem;
+  }
+
+  /* 核心：卡片2列 */
+  .projects-grid,
+  .posts-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 2rem !important;
+  }
+
+  /* 卡片内容适配 */
+  .project-card,
+  .post-card {
+    max-width: none;
+  }
+
+  .project-image,
+  .post-card img {
+    height: 188px;
+  }
+
+  .project-content h3,
+  .post-title {
+    font-size: 1.4rem;
+  }
+
+  .project-content p,
+  .post-content {
+    font-size: 1.05rem;
+  }
+
+  /* 悬浮按钮适配 */
+  #back-to-top,
+  #theme-toggle-float {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+  }
+}
+
+/* 宽屏（≥1200px）：固定3列，包括超大屏 */
+@media (min-width: 1200px) {
+  /* 基础容器适配 */
+  .container,
+  .nav-container {
+    width: 92%;
+    max-width: 1400px;
+  }
+
+  /* 核心：强制3列（关键！取消原4列规则） */
+  .projects-grid,
+  .posts-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 3rem !important;
+  }
+
+  /* 头部文本适配 */
+  .about-text {
+    max-width: 700px;
+  }
+
+  .section-container h2 {
+    font-size: 1.8rem;
+  }
+}
+
+/* ======================
+   特殊场景优化（无布局冲突）
+====================== */
+
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  a,
+  .project-card,
+  .post-card,
+  .nav-link {
+    min-width: 48px;
+    min-height: 48px;
+    padding: 0.8rem 1.2rem;
+  }
+
+  .btn-primary {
+    padding: 0.8rem 1.6rem;
+    font-size: 1rem;
+  }
+
+  #back-to-top,
+  #theme-toggle-float {
+    width: 50px;
+    height: 50px;
+    font-size: 1.3rem;
+  }
+
+  .nav-link {
+    padding: 0.6rem 1rem;
+  }
+
+  .project-card:active,
+  .post-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px var(--shadow-hover);
+  }
+
+  .btn-primary:active {
+    transform: scale(0.96);
+  }
+}
+
+/* 高分辨率设备优化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .avatar {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+
+  .project-image {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* 横屏模式优化 */
+@media (orientation: landscape) and (max-height: 600px) {
+  .navbar {
+    padding: 0.6rem 0;
+  }
+
+  header {
+    padding: 1rem 0 1.5rem;
+  }
+
+  .avatar {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 0.8rem;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .tagline {
+    font-size: 0.95rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .about-text {
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
+  }
+
+  main {
+    padding: 1rem 0;
+  }
+
+  .section-container {
+    padding: 1rem;
+  }
+}

@@ -1,0 +1,128 @@
+/* ======================
+   无障碍访问优化
+====================== */
+
+/* ======================
+   键盘导航支持
+====================== */
+
+:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ======================
+   屏幕阅读器支持
+====================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ======================
+   颜色对比度优化
+====================== */
+
+/* ======================
+   交互状态优化
+====================== */
+
+button:active,
+a:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+button:focus,
+a:focus {
+  transform: scale(1.02);
+  transition: transform 0.2s ease;
+}
+
+/* ======================
+   跳过导航链接
+====================== */
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--link);
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 100;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid var(--link);
+}
+
+/* ======================
+   加载状态优化
+====================== */
+
+.loading-with-retry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.retry-button {
+  background-color: var(--link);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.retry-button:hover {
+  background-color: var(--link-hover);
+  transform: translateY(-2px);
+}
+
+.retry-button:focus {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+
+/* ======================
+   平滑滚动
+====================== */
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

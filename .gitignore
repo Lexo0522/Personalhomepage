@@ -1,0 +1,69 @@
+# 操作系统生成的文件
+.DS_Store
+Thumbs.db
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# 编辑器生成的文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# 日志文件
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 缓存文件
+.cache/
+.temp/
+.eslintcache
+
+# 环境变量文件
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 依赖目录（如果使用Node.js）
+node_modules/
+package-lock.json
+yarn.lock
+
+# 构建目录（如果使用构建工具）
+dist/
+build/
+out/
+
+# 其他临时文件
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# 本地配置文件（如果有）
+.localconfig
+.user.ini
+
+# PWA缓存文件（Service Worker生成）
+workbox-*
+sw.js.map
+
+# 测试覆盖率
+coverage/
+.nyc_output/
+
+# 部署相关
+.vercel/
+.netlify/
+*.tsbuildinfo
