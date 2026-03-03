@@ -8,9 +8,6 @@
   <meta name="keywords" content="Rutua, WordPress开发者, WordPress插件, SMTP Mail WP, Argon主题, WordPress主题, 开源项目, 技术博客, 个人主页, 响应式网页, Web开发, PHP开发, WordPress优化, 邮件插件, GitHub开源">
   <meta name="description" content="Rutua 的个人开发者主页：专注 WordPress 插件开发（如 SMTP Mail WP）、主题定制（Argon 修改版）与性能优化。分享开源项目、技术博客及响应式网页模板，助力高效建站。">
   <link rel="canonical" href="https://rutua.cn/">
-  <!-- Content Security Policy -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://hm.baidu.com https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline'; img-src 'self' https://stats.rutua.cn https://avatars.githubusercontent.com https://raw.githubusercontent.com data: https://hm.baidu.com; connect-src 'self' https://stats.rutua.cn https://www.rutua.cn https://hm.baidu.com; font-src 'self' https://cdnjs.cloudflare.com data:; object-src 'none'; frame-src 'none'; upgrade-insecure-requests;">
-
   <!-- Favicon - 使用本地图标 -->
   <link rel="icon" type="image/png" href="img/cropped-icon.png">
   <link rel="shortcut icon" href="img/cropped-icon.png">
@@ -39,55 +36,11 @@
 
   <!-- 性能优化标签 -->
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <!-- 禁止DNS预取某些域名 -->
-  <meta http-equiv="x-dns-prefetch-control" content="on">
-  <!-- DNS预取关键域名 -->
-  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-  <link rel="dns-prefetch" href="https://hm.baidu.com">
-  
   <!-- 外部 CSS - 优先加载 -->
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/responsive.css">
   <link rel="stylesheet" href="/css/accessibility.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <!-- <link rel="stylesheet" href="/css/animations.css"> -->
-  <!-- <link rel="stylesheet" href="/css/skeleton.css"> -->
-  
-  <!-- PWA资源 - 延迟加载 -->
-  <link rel="preload" href="/manifest.json" as="fetch" crossorigin>
-  
-  <!-- Service Worker 注册 - 使用requestIdleCallback延迟执行 -->
-  <script defer>
-    // 使用requestIdleCallback在浏览器空闲时注册Service Worker
-    window.addEventListener('load', () => {
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(() => {
-          if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/js/sw.js')
-              .then(registration => {
-                console.log('ServiceWorker 注册成功，作用域为:', registration.scope);
-              })
-              .catch(error => {
-                console.error('ServiceWorker 注册失败:', error);
-              });
-          }
-        });
-      } else {
-        // 回退方案：延迟2秒后注册
-        setTimeout(() => {
-          if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/js/sw.js')
-              .then(registration => {
-                console.log('ServiceWorker 注册成功，作用域为:', registration.scope);
-              })
-              .catch(error => {
-                console.error('ServiceWorker 注册失败:', error);
-              });
-          }
-        }, 2000);
-      }
-    });
-  </script>
 </head>
 <body>
   <!-- 跳过导航链接 -->
@@ -278,6 +231,34 @@
   </footer>
 
 
+  <!-- 内联脚本：确保加载动画能够正确隐藏 -->
+  <script>
+    // 页面加载完成后隐藏加载动画
+    window.addEventListener('load', function() {
+      const loadingScreen = document.getElementById('loading-screen');
+      if (loadingScreen) {
+        loadingScreen.classList.add('hidden');
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+        }, 600);
+      }
+    });
+    
+    // DOM加载完成后也尝试隐藏加载动画
+    document.addEventListener('DOMContentLoaded', function() {
+      const loadingScreen = document.getElementById('loading-screen');
+      if (loadingScreen) {
+        // 延迟一点时间，确保页面内容已经准备好
+        setTimeout(() => {
+          loadingScreen.classList.add('hidden');
+          setTimeout(() => {
+            loadingScreen.style.display = 'none';
+          }, 600);
+        }, 500);
+      }
+    });
+  </script>
+  
   <!-- 外部 JavaScript 文件 - 使用defer延迟加载 -->
   <script defer src="/js/blog-posts.js"></script>
 </body>

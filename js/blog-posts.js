@@ -36,7 +36,6 @@ async function fetchWithRetry(url, options, maxRetries = 3, delay = 1000) {
         throw error;
       }
       
-      console.warn(`请求失败，第 ${i + 1} 次重试...`, error);
       await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
     }
   }
@@ -46,11 +45,8 @@ async function fetchBlogPosts() {
   const container = document.getElementById('blog-posts-container');
   
   if (!container) {
-    console.error('Blog posts container not found');
     return;
   }
-  
-  console.log('开始获取博客文章数据');
   
   try {
     // 直接硬编码API URL
@@ -71,13 +67,11 @@ async function fetchBlogPosts() {
     
     if (posts.length === 0) {
       container.innerHTML = '<div class="error">暂无文章</div>';
-      console.log('无博客文章');
       return;
     }
     
     const html = posts.map(post => {
       if (!post || !post.title || !post.link) {
-        console.warn('Invalid post object, skipping:', post);
         return '';
       }
       
@@ -105,12 +99,10 @@ async function fetchBlogPosts() {
     
     if (!cleanHtml) {
       container.innerHTML = '<div class="error">暂无可用文章</div>';
-      console.log('无可用博客文章');
       return;
     }
     
     container.innerHTML = cleanHtml;
-    console.log(`成功加载 ${posts.length} 篇博客文章`);
     
     const skeletonCard = document.querySelector('#blog-posts-container .post-card.skeleton');
     if (skeletonCard) {
@@ -118,7 +110,6 @@ async function fetchBlogPosts() {
     }
     
   } catch (err) {
-    console.error('Failed to load blog posts:', err);
     container.innerHTML = `
       <div class="loading-with-retry">
         <div class="error">加载失败，请稍后重试 😢</div>
@@ -132,10 +123,10 @@ async function fetchBlogPosts() {
 function initLoadingAnimation() {
   const loadingScreen = document.getElementById('loading-screen');
   if (loadingScreen) {
-    if (document.readyState === 'complete') {
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
       hideLoadingScreen();
     } else {
-      window.addEventListener('load', hideLoadingScreen);
+      document.addEventListener('DOMContentLoaded', hideLoadingScreen);
       setTimeout(hideLoadingScreen, 3000);
     }
   }
